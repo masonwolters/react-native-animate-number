@@ -20,6 +20,7 @@ export default class AnimateNumber extends Component {
     countBy? : ?number,
     interval? : ?number,
     steps? : ?number,
+    animateOnMount? : ?boolean,
     value : number,
     timing : 'linear' | 'easeOut' | 'easeIn' | () => number,
     formatter : () => {},
@@ -31,6 +32,7 @@ export default class AnimateNumber extends Component {
     interval : 14,
     timing : 'linear',
     steps : 45,
+    animateOnMount: false,
     value : 0,
     formatter : (val) => val,
     onFinish : () => {}
@@ -89,7 +91,15 @@ export default class AnimateNumber extends Component {
     this.startFrom = this.state.value
     this.endWith = this.props.value
     this.dirty = true
-    this.startAnimate()
+
+    if (this.props.animateOnMount) {
+      this.startAnimate()
+    } else {
+      this.setState({
+        value : this.props.value,
+        displayValue : this.props.formatter(this.props.value)
+      })
+    }
   }
 
   componentWillUpdate(nextProps, nextState) {
@@ -119,6 +129,10 @@ export default class AnimateNumber extends Component {
 
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.timer)
+  }
+
   render() {
     return (
       <Text {...this.props}>
@@ -130,7 +144,7 @@ export default class AnimateNumber extends Component {
 
     let progress = this.getAnimationProgress()
 
-    Timer.setTimeout(() => {
+    this.timer = Timer.setTimeout(() => {
 
       let value = (this.endWith - this.startFrom)/this.props.steps
       let sign = value >= 0 ? 1 : -1
