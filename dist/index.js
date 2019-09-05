@@ -78,10 +78,13 @@ export default class AnimateNumber extends Component {
   constructor(props:any) {
     super(props);
     // default values of state and non-state variables
-    this.state = {
+    this.state = props.animateOnMount ? {
       value : 0,
       displayValue : 0
-    }
+    } : {
+      value : props.value,
+      displayValue : props.formatter(props.value)
+    };
     this.dirty = false;
     this.startFrom = 0;
     this.endWith = 0;
@@ -93,12 +96,7 @@ export default class AnimateNumber extends Component {
     this.dirty = true
 
     if (this.props.animateOnMount) {
-      this.startAnimate()
-    } else {
-      this.setState({
-        value : this.props.value,
-        displayValue : this.props.formatter(this.props.value)
-      })
+      this.startAnimate();
     }
   }
 
